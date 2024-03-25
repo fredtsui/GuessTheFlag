@@ -9,13 +9,14 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Spain", "Great Britian", "Ukraine", "US"].shuffled()
+    @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Spain", "UK", "Ukraine", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
     @State private var showingScore = false
     @State private var scoreTitle = ""
     @State private var playerScore = 0
     @State private var selectedFlag = 0
-    @State private var questionCount = 0
+    @State private var questionCount = 1
+    @State private var isGameOver = false
 
     func flagTapped(_ number: Int){
         if number == correctAnswer {
@@ -25,13 +26,24 @@ struct ContentView: View {
             scoreTitle = "Wrong"
             selectedFlag = number
         }
-        showingScore = true
-        questionCount += 1
+        if questionCount < 8 {
+            showingScore = true
+        } else {
+            isGameOver = true
+        }
     }
     
     func askQuestion(){
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        questionCount += 1
+    }
+    
+    func resetGame(){
+        askQuestion()
+        questionCount = 1
+        isGameOver = false
+        playerScore = 0
     }
     
     var body: some View {
@@ -92,8 +104,29 @@ struct ContentView: View {
             }
         }
         
-        
-
+        .alert("Game Over", isPresented: $isGameOver){
+            Button("Restart", action: resetGame)
+        } message: {
+            switch playerScore {
+            case 0...3:
+                Text("""
+                     You only got \(playerScore) correct.
+                     You need more practice.
+                     """)
+            case 4...6:
+                Text("""
+                     You got \(playerScore) correct.
+                     You are getting the hang of it.
+                    """)
+            case 7...8:
+                Text("""
+                     Congrats! You got \(playerScore) correct.
+                     You are a master!
+                    """)
+            default:
+                Text("What just happened?")
+            }
+        }
     }
 }
 

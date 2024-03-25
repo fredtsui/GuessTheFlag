@@ -42,7 +42,6 @@ struct ContentView: View {
     func resetGame(){
         askQuestion()
         questionCount = 1
-        isGameOver = false
         playerScore = 0
     }
     
